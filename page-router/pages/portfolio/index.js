@@ -4,23 +4,23 @@ import { useRouter } from "next/router";
 export default function Portfolio() {
   const router = useRouter();
 
-  const projects = [
-    { id: 1, title: "Project 1" },
-    { id: 2, title: "Project 2" },
+  const clients = [
+    { id: 1, name: "Max" },
+    { id: 2, name: "jay" },
   ];
   return (
     <div>
       <h1>Portfolio Page</h1>
       <ul>
-        {projects.map((project) => (
-          <li>
+        {clients.map((client) => (
+          <li key={client.id}>
             <Link
               href={{
-                pathname: "/portfolio/[projectId]",
-                query: { projectId: project.id },
+                pathname: "/portfolio/clients/[clientId]",
+                query: { clientId: client.name },
               }}
             >
-              {project.title}
+              {client.name}
             </Link>
           </li>
         ))}
