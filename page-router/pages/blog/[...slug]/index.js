@@ -5,7 +5,7 @@ export default function BlogPost() {
   console.log(router.query);
   return (
     <div>
-      <h1>BlogPost</h1>
+      <h1>BlogPost: {router.query.slug}</h1>
     </div>
   );
 }
