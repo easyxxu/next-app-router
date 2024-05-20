@@ -1,5 +1,8 @@
 import { useRouter } from "next/router";
 import EventList from "../../components/event/event-list";
+import ResultTitle from "../../components/event/results-title";
+import Button from "../../components/ui/button";
+import ErrorAlert from "../../components/ui/error-alert";
 import { getFilteredEvents } from "../../dummy-data";
 
 export default function FilteredEvent(props) {
@@ -12,9 +15,19 @@ export default function FilteredEvent(props) {
 
   const filteredEvents = getFilteredEvents(startDate, endDate);
   if (!filteredEvents || filteredEvents.length === 0)
-    return <p className="center">No events found for the chosen filter</p>;
+    return (
+      <>
+        <ErrorAlert>
+          <p className="center">No events found for the chosen filter!</p>
+        </ErrorAlert>
+        <div className="center">
+          <Button link="/events">Show All Events</Button>
+        </div>
+      </>
+    );
   return (
     <>
+      <ResultTitle startDate={startDate} endDate={endDate} />
       <EventList events={filteredEvents} />
     </>
   );
