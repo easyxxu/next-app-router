@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
-export default function LastSalesPage() {
-  const [sales, setSales] = useState();
+export default function LastSalesPage(props) {
+  const [sales, setSales] = useState(props.sales);
   // const [isLoading, setIsLoading] = useState(false);
 
   const { data, error } = useSWR(
@@ -23,6 +23,7 @@ export default function LastSalesPage() {
       setSales(transformedData);
     }
   }, [data]);
+
   // useEffect(() => {
   //   setIsLoading(true);
   //   fetch("https://nextjs-test-28bd6-default-rtdb.firebaseio.com/sales.json")
@@ -41,9 +42,9 @@ export default function LastSalesPage() {
   //     });
   // }, []);
   if (error) {
-    return <p>No Data Yet</p>;
+    return <p>Failed to load.</p>;
   }
-  if (!data || !sales) {
+  if (!data && !sales) {
     return <p>Loading...</p>;
   }
   return (
@@ -55,4 +56,23 @@ export default function LastSalesPage() {
       ))}
     </ul>
   );
+}
+
+export async function getStaticProps() {
+  return fetch(
+    "https://nextjs-test-28bd6-default-rtdb.firebaseio.com/sales.json"
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      const transformedData = [];
+
+      for (const key in data) {
+        transformedData.push({
+          id: key,
+          username: data[key].username,
+          volume: data[key].volume,
+        });
+      }
+      return { props: { sales: transformedData } };
+    });
 }
