@@ -1,12 +1,10 @@
-import { useRouter } from "next/router";
+import { getAllEvents, getEventById } from "../../helpers/api-util";
 import EventImg from "../../components/event/event-detail/event-img";
 import EventInfo from "../../components/event/event-detail/event-info";
 import EventWrap from "../../components/event/event-detail/event-wrap";
-import { BASE_URL, transformedFetchedData } from "..";
 
 export default function EventDetailPage(props) {
-  const router = useRouter();
-  const event = props.event;
+  const event = props.selectedEvent;
 
   if (!event) return <p>Not Found Event!</p>;
 
@@ -26,21 +24,22 @@ export default function EventDetailPage(props) {
 export async function getStaticProps(context) {
   const { params } = context;
   const eventId = params.eventId;
-  const res = await fetch(BASE_URL + "/events.json").then((res) => res.json());
-  const data = transformedFetchedData(res).find(
-    (event) => event.id === eventId
-  );
+  const selectedEvent = await getEventById(eventId);
+
   return {
     props: {
-      event: data,
+      selectedEvent: selectedEvent,
     },
+    revalidate: 30,
   };
 }
 
 export async function getStaticPaths() {
-  const res = await fetch(BASE_URL + "/events.json").then((res) => res.json());
-  const ids = transformedFetchedData(res).map((event) => event.id);
-  const pathsWithParams = ids.map((id) => ({ params: { eventId: id } }));
+  const allEvents = await getAllEvents();
+  const pathsWithParams = allEvents.map((event) => ({
+    params: { eventId: event.id },
+  }));
+
   return {
     paths: pathsWithParams,
     fallback: false,
