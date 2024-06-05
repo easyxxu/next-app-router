@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { getAllEvents, getEventById } from "../../helpers/api-util";
 import EventImg from "../../components/event/event-detail/event-img";
 import EventInfo from "../../components/event/event-detail/event-info";
@@ -9,15 +10,21 @@ export default function EventDetailPage(props) {
   if (!event) return <p>Not Found Event!</p>;
 
   return (
-    <EventWrap>
-      <EventImg img={event.image} />
-      <EventInfo
-        title={event.title}
-        description={event.description}
-        location={event.location}
-        date={event.date}
-      />
-    </EventWrap>
+    <>
+      <Head>
+        <title>{event.title}</title>
+        <meta name="description" content={event.description} />
+      </Head>
+      <EventWrap>
+        <EventImg img={event.image} />
+        <EventInfo
+          title={event.title}
+          description={event.description}
+          location={event.location}
+          date={event.date}
+        />
+      </EventWrap>
+    </>
   );
 }
 

@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Head from "next/head";
 import EventList from "../../components/event/event-list";
 import Filter from "../../components/filter/filter";
 import { useState } from "react";
@@ -18,6 +19,9 @@ export default function EventsAllPage(props) {
 
   return (
     <>
+      <Head>
+        <title>All Events</title>
+      </Head>
       <Filter onSubmit={handleEventFilter} />
       <EventList events={events} />
     </>
