@@ -1,34 +1,34 @@
-import path from "path";
-import fs from "fs";
+import { connectDatabase, insertDocument } from "../../../helpers/db-util";
 
-export function buildSubscribedEmailPath() {
-  return path.join(process.cwd(), "data", "subscribedEmail.json");
-}
-
-export function extractSubscribedEmail(filePath) {
-  const fileData = fs.readFileSync(filePath);
-  const data = JSON.parse(fileData);
-  return data;
-}
-
-export default function handler(req, res) {
-  const filePath = buildSubscribedEmailPath();
-  const data = extractSubscribedEmail(filePath);
-
+export default async function handler(req, res) {
   if (req.method === "POST") {
-    const email = req.body.email;
+    const userEmail = req.body.email;
+    // Email 유효성 검사
     if (
-      !email ||
-      !email.includes("@") ||
-      !email.includes(".") ||
-      email.trim() === ""
+      !userEmail ||
+      !userEmail.includes("@") ||
+      !userEmail.includes(".") ||
+      userEmail.trim() === ""
     ) {
       res.status(422).json({ message: "Invalid Email!" });
       return;
     }
-    data.push(email);
-    fs.writeFileSync(filePath, JSON.stringify(data));
-    console.log(email);
+    let client;
+    try {
+      client = await connectDatabase();
+    } catch (error) {
+      res.status(500).json({ message: "Connecting to the database failed!" });
+      return;
+    }
+
+    try {
+      await insertDocument(client, "newsletter", { email: userEmail });
+      client.close();
+    } catch (error) {
+      res.status(403).json({ message: "Inserting data failed!" });
+      return;
+    }
+
     res.status(201).json({ message: "Success Newsletter-Registration" });
   }
 }
